@@ -1,0 +1,47 @@
+### 0) signup
+POST {{host}}/api/v1/users/signup
+Content-Type: application/json
+
+{
+  "loginId": "devlog111",
+  "password": "Password!234",
+  "nickname": "테스트1",
+  "email": "devlog111@devlog.com"
+}
+
+### 1) login
+POST {{host}}/api/v1/users/login
+Content-Type: application/json
+
+{
+  "loginId": "devlog111",
+  "password": "Password!234"
+}
+
+### 2) me (access 필요)
+GET {{host}}/api/v1/users/me
+Authorization: Bearer {{accessToken}}
+
+### 3) reissue (refresh로 access 재발급)
+POST {{host}}/api/v1/users/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### 4) me with NEW access
+GET {{host}}/api/v1/users/me
+Authorization: Bearer {{newAccessToken}}
+
+### 5) logout (refresh 삭제)
+POST {{host}}/api/v1/users/logout
+Authorization: Bearer {{accessToken}}
+
+### 6) reissue after logout (should fail)
+POST {{host}}/api/v1/users/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
