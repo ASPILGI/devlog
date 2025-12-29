@@ -45,3 +45,14 @@ Content-Type: application/json
 {
   "refreshToken": "{{refreshToken}}"
 }
+
+### Post 생성
+POST {{host}}/api/v1/posts
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "첫 번째 게시글",
+  "content": "Day6 Post 생성 테스트"
+}
+
