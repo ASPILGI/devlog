@@ -1,34 +1,70 @@
-### 0) signup
+### 0) signup (A)
 POST {{host}}/api/v1/users/signup
 Content-Type: application/json
 
 {
-  "loginId": "devlog112",
-  "password": "Password!234",
-  "nickname": "테스트1",
-  "email": "devlog1112@devlog.com"
+  "loginId": "{{loginIdA}}",
+  "password": "{{passwordA}}",
+  "nickname": "테스트A",
+  "email": "devlogA@devlog.com"
 }
 
-### 1) login
+### 0-1) signup (B)
+POST {{host}}/api/v1/users/signup
+Content-Type: application/json
+
+{
+  "loginId": "{{loginIdB}}",
+  "password": "{{passwordB}}",
+  "nickname": "테스트B",
+  "email": "devlogB_001@devlog.com"
+}
+
+### 1) login (A)
 POST {{host}}/api/v1/users/login
 Content-Type: application/json
 
 {
-  "loginId": "devlog112",
-  "password": "Password!234"
+  "loginId": "{{loginIdA}}",
+  "password": "{{passwordA}}"
 }
+
+> {%
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+### 1) login (B)
+POST {{host}}/api/v1/users/login
+Content-Type: application/json
+
+{
+  "loginId": "{{loginIdB}}",
+  "password": "{{passwordB}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+
 
 ### 2) me (access 필요)
 GET {{host}}/api/v1/users/me
 Authorization: Bearer {{accessToken}}
 
-### 3) reissue (refresh로 access 재발급)
+### 3) reissue (refresh로 access 재발급) -> newAccessToken 저장
 POST {{host}}/api/v1/users/reissue
 Content-Type: application/json
 
 {
   "refreshToken": "{{refreshToken}}"
 }
+
+> {%
+    client.global.set("newAccessToken", response.body.data.accessToken ?? response.body.data.newAccessToken);
+%}
 
 ### 4) me with NEW access
 GET {{host}}/api/v1/users/me
@@ -46,7 +82,11 @@ Content-Type: application/json
   "refreshToken": "{{refreshToken}}"
 }
 
-### Post 생성
+### =========================
+### Post CRUD (A)
+### =========================
+
+### Post 생성 (A) -> postId 저장
 POST {{host}}/api/v1/posts
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -56,16 +96,20 @@ Content-Type: application/json
   "content": "Day6 Post 생성 테스트2"
 }
 
-### Post 단건 조회
-GET {{host}}/api/v1/posts/2
+> {%
+    client.global.set("postId", response.body.data.id);
+%}
+
+### Post 단건 조회 (A)
+GET {{host}}/api/v1/posts/{{postId}}
 Authorization: Bearer {{accessToken}}
 
-### Post 목록 조회
+### Post 목록 조회 (A)
 GET {{host}}/api/v1/posts
 Authorization: Bearer {{accessToken}}
 
-### Post 수정 (작성자)
-PUT {{host}}/api/v1/posts/4
+### Post 수정 (A)
+PUT {{host}}/api/v1/posts/{{postId}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -74,6 +118,33 @@ Content-Type: application/json
   "content": "수정된 내용"
 }
 
-### Post 삭제 (작성자)
-DELETE {{host}}/api/v1/posts/4
+### Post 삭제 (A)
+DELETE {{host}}/api/v1/posts/{{postId}}
 Authorization: Bearer {{accessToken}}
+
+### =========================
+### 403 테스트 (B가 A글 수정 시도)
+### =========================
+
+### login (B) -> accessTokenB 저장
+POST {{host}}/api/v1/users/login
+Content-Type: application/json
+
+{
+  "loginId": "{{loginIdB}}",
+  "password": "{{passwordB}}"
+}
+
+> {%
+    client.global.set("accessTokenB", response.body.data.accessToken);
+%}
+
+### B가 A글 수정 시도 -> 403 기대
+PUT {{host}}/api/v1/posts/{{postId}}
+Authorization: Bearer {{accessTokenB}}
+Content-Type: application/json
+
+{
+  "title": "B 수정 시도",
+  "content": "403 떠야 정상"
+}
