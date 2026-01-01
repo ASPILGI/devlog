@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
@@ -31,5 +33,10 @@ public class PostController {
     @GetMapping("/{id}")
     public ApiResponse<PostResponse> getById(@PathVariable Long id) {
         return ApiResponse.ok(postService.getById(id));
+    }
+
+    @GetMapping
+    public ApiResponse<List<PostResponse>> getList() {
+        return ApiResponse.ok(postService.getList());
     }
 }

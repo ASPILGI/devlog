@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -49,5 +51,22 @@ public class PostServiceImpl implements PostService {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PostResponse> getList() {
+
+        return postRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(post -> PostResponse.builder()
+                        .id(post.getId())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .userId(post.getUserId())
+                        .createdAt(post.getCreatedAt())
+                        .updatedAt(post.getUpdatedAt())
+                        .build())
+                .toList();
     }
 }
