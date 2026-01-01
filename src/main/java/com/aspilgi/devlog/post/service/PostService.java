@@ -1,8 +1,6 @@
 package com.aspilgi.devlog.post.service;
 
-import com.aspilgi.devlog.post.dto.PostCreateRequest;
-import com.aspilgi.devlog.post.dto.PostCreateResponse;
-import com.aspilgi.devlog.post.dto.PostResponse;
+import com.aspilgi.devlog.post.dto.*;
 
 import java.util.List;
 
@@ -12,4 +10,8 @@ public interface PostService {
     PostResponse getById(Long id);
 
     List<PostResponse> getList();
+
+    PostUpdateResponse update(Long postId, PostUpdateRequest request, Long userId);
+
+    void delete(Long postId, Long userId);
 }

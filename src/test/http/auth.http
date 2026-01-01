@@ -3,10 +3,10 @@ POST {{host}}/api/v1/users/signup
 Content-Type: application/json
 
 {
-  "loginId": "devlog111",
+  "loginId": "devlog112",
   "password": "Password!234",
   "nickname": "테스트1",
-  "email": "devlog111@devlog.com"
+  "email": "devlog1112@devlog.com"
 }
 
 ### 1) login
@@ -14,7 +14,7 @@ POST {{host}}/api/v1/users/login
 Content-Type: application/json
 
 {
-  "loginId": "devlog111",
+  "loginId": "devlog112",
   "password": "Password!234"
 }
 
@@ -64,3 +64,16 @@ Authorization: Bearer {{accessToken}}
 GET {{host}}/api/v1/posts
 Authorization: Bearer {{accessToken}}
 
+### Post 수정 (작성자)
+PUT {{host}}/api/v1/posts/4
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "수정된 제목",
+  "content": "수정된 내용"
+}
+
+### Post 삭제 (작성자)
+DELETE {{host}}/api/v1/posts/4
+Authorization: Bearer {{accessToken}}

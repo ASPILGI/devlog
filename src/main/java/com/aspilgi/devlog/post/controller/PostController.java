@@ -2,13 +2,13 @@ package com.aspilgi.devlog.post.controller;
 
 import com.aspilgi.devlog.auth.principal.AuthUser;
 import com.aspilgi.devlog.common.api.ApiResponse;
-import com.aspilgi.devlog.post.dto.PostCreateRequest;
-import com.aspilgi.devlog.post.dto.PostCreateResponse;
-import com.aspilgi.devlog.post.dto.PostResponse;
+import com.aspilgi.devlog.post.dto.*;
 import com.aspilgi.devlog.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,5 +38,27 @@ public class PostController {
     @GetMapping
     public ApiResponse<List<PostResponse>> getList() {
         return ApiResponse.ok(postService.getList());
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<PostUpdateResponse> update(
+            @PathVariable Long id,
+            @RequestBody @Valid PostUpdateRequest request
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AuthUser authUser = (AuthUser) authentication.getPrincipal();
+        Long userId = authUser.getUserId();
+
+        return ApiResponse.ok(postService.update(id, request, userId));
+    }
+
+    @DeleteMapping("{id}")
+    public ApiResponse<Void> delete(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AuthUser authUser = (AuthUser) authentication.getPrincipal();
+        Long userId = authUser.getUserId();
+
+        postService.delete(id, userId);
+        return ApiResponse.ok();
     }
 }
