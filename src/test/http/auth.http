@@ -56,3 +56,7 @@ Content-Type: application/json
   "content": "Day6 Post 생성 테스트"
 }
 
+### Post 단건 조회
+GET {{host}}/api/v1/posts/1
+Authorization: Bearer {{accessToken}}
+

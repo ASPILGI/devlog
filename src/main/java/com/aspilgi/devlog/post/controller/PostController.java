@@ -4,14 +4,12 @@ import com.aspilgi.devlog.auth.principal.AuthUser;
 import com.aspilgi.devlog.common.api.ApiResponse;
 import com.aspilgi.devlog.post.dto.PostCreateRequest;
 import com.aspilgi.devlog.post.dto.PostCreateResponse;
+import com.aspilgi.devlog.post.dto.PostResponse;
 import com.aspilgi.devlog.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -28,5 +26,10 @@ public class PostController {
         return ApiResponse.ok(
                 postService.create(request, authUser.getUserId())
         );
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<PostResponse> getById(@PathVariable Long id) {
+        return ApiResponse.ok(postService.getById(id));
     }
 }
