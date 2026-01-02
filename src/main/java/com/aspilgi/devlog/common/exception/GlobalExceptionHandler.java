@@ -58,7 +58,8 @@ public class GlobalExceptionHandler  {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleUnknown(Exception e) {
         log.error("Unhandled exception", e);
-        return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getStatus())
-                .body(ApiResponse.fail(ErrorCode.INTERNAL_ERROR.getCode(), ErrorCode.INTERNAL_ERROR.getMessage()));
+        ErrorCode ec = ErrorCode.INTERNAL_ERROR;
+        return ResponseEntity.status(ec.getStatus())
+                .body(ApiResponse.fail(ec.getCode(), ec.getMessage()));
     }
 }
