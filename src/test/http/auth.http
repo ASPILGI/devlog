@@ -105,7 +105,7 @@ GET {{host}}/api/v1/posts/{{postId}}
 Authorization: Bearer {{accessToken}}
 
 ### Post 목록 조회 (A)
-GET {{host}}/api/v1/posts
+GET {{host}}/api/v1/posts?page=0&size=10
 Authorization: Bearer {{accessToken}}
 
 ### Post 수정 (A)
@@ -149,6 +149,33 @@ Content-Type: application/json
   "content": "403 떠야 정상"
 }
 
-### Post 목록 페이징
-GET {{host}}/api/v1/posts?page=0&size=10
+
+### Comment 생성
+POST {{host}}/api/v1/posts/{{postId}}/comments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "첫 댓글!"
+}
+
+> {%
+    client.global.set("commentId", response.body.data.id);
+%}
+
+### Comment 목록 조회
+GET {{host}}/api/v1/posts/{{postId}}/comments
+Authorization: Bearer {{accessToken}}
+
+### Comment 수정(작성자)
+PUT {{host}}/api/v1/posts/{{postId}}/comments/{{commentId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "댓글 수정!"
+}
+
+### Comment 삭제(작성자)
+DELETE {{host}}/api/v1/posts/{{postId}}/comments/{{commentId}}
 Authorization: Bearer {{accessToken}}
