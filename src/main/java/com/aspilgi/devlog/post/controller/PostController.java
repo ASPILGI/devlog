@@ -2,6 +2,7 @@ package com.aspilgi.devlog.post.controller;
 
 import com.aspilgi.devlog.auth.principal.AuthUser;
 import com.aspilgi.devlog.common.api.ApiResponse;
+import com.aspilgi.devlog.common.dto.PageResponse;
 import com.aspilgi.devlog.post.dto.*;
 import com.aspilgi.devlog.post.service.PostService;
 import jakarta.validation.Valid;
@@ -35,9 +36,17 @@ public class PostController {
         return ApiResponse.ok(postService.getById(id));
     }
 
+//    @GetMapping
+//    public ApiResponse<List<PostResponse>> getList() {
+//        return ApiResponse.ok(postService.getList());
+//    }
+
     @GetMapping
-    public ApiResponse<List<PostResponse>> getList() {
-        return ApiResponse.ok(postService.getList());
+    public ApiResponse<PageResponse<PostListItemResponse>> getPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.ok(postService.getPage(page, size));
     }
 
     @PutMapping("/{id}")

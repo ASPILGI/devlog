@@ -148,3 +148,7 @@ Content-Type: application/json
   "title": "B 수정 시도",
   "content": "403 떠야 정상"
 }
+
+### Post 목록 페이징
+GET {{host}}/api/v1/posts?page=0&size=10
+Authorization: Bearer {{accessToken}}

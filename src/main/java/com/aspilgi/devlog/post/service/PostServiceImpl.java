@@ -1,9 +1,13 @@
 package com.aspilgi.devlog.post.service;
 
+import com.aspilgi.devlog.common.dto.PageResponse;
 import com.aspilgi.devlog.post.dto.*;
 import com.aspilgi.devlog.post.entity.Post;
 import com.aspilgi.devlog.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,5 +106,30 @@ public class PostServiceImpl implements PostService {
         }
 
         postRepository.delete(post);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<PostListItemResponse> getPage(int page, int size) {
+
+        PageRequest pageable  = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Post> result = postRepository.findAll(pageable);
+
+        return PageResponse.<PostListItemResponse>builder()
+                .content(result.getContent().stream()
+                        .map(p -> PostListItemResponse.builder()
+                                .id(p.getId())
+                                .title(p.getTitle())
+                                .userId(p.getUserId())
+                                .createdAt(p.getCreatedAt())
+                                .updatedAt(p.getUpdatedAt())
+                                .build())
+                        .toList())
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .last(result.isLast())
+                .build();
     }
 }
