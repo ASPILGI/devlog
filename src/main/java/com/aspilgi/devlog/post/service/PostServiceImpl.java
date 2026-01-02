@@ -1,6 +1,8 @@
 package com.aspilgi.devlog.post.service;
 
 import com.aspilgi.devlog.common.dto.PageResponse;
+import com.aspilgi.devlog.common.error.ErrorCode;
+import com.aspilgi.devlog.common.exception.BusinessException;
 import com.aspilgi.devlog.post.dto.*;
 import com.aspilgi.devlog.post.entity.Post;
 import com.aspilgi.devlog.post.repository.PostRepository;
@@ -44,7 +46,7 @@ public class PostServiceImpl implements PostService {
     public PostResponse getById(Long id) {
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -77,7 +79,7 @@ public class PostServiceImpl implements PostService {
     public PostUpdateResponse update(Long postId, PostUpdateRequest request, Long userId) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         if (!post.getUserId().equals(userId)) {
             throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
@@ -99,7 +101,7 @@ public class PostServiceImpl implements PostService {
     public void delete(Long postId, Long userId) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         if (!post.getUserId().equals(userId)) {
             throw new AccessDeniedException("작성자만 삭제할 수 있습니다.");

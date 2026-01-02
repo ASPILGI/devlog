@@ -5,6 +5,8 @@ import com.aspilgi.devlog.comment.dto.CommentResponse;
 import com.aspilgi.devlog.comment.dto.CommentUpdateRequest;
 import com.aspilgi.devlog.comment.entity.Comment;
 import com.aspilgi.devlog.comment.repository.CommentRepository;
+import com.aspilgi.devlog.common.error.ErrorCode;
+import com.aspilgi.devlog.common.exception.BusinessException;
 import com.aspilgi.devlog.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse create(Long postId, CommentCreateRequest request, Long userId) {
 
         if (!postRepository.existsById(postId)) {
-            throw new IllegalArgumentException("게시글을 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
 
         Comment saved = commentRepository.save(
@@ -45,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponse> getList(Long postId) {
 
         if (!postRepository.existsById(postId)) {
-            throw new IllegalArgumentException("게시글을 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
 
         return commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId)
@@ -58,11 +60,11 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse update(Long postId, Long commentId, CommentUpdateRequest request, Long userId) {
         
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
         // postId 매칭 체크(다른 글의 댓글을 URL로 조작하는 것을 방지)
         if (!comment.getPostId().equals(postId)) {
-            throw new IllegalArgumentException("댓글이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
         if (!comment.getUserId().equals(userId)) {
@@ -77,10 +79,10 @@ public class CommentServiceImpl implements CommentService {
     public void delete(Long postId, Long commentId, Long userId) {
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getPostId().equals(postId)) {
-            throw new IllegalArgumentException("댓글이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
         if (!comment.getUserId().equals(userId)) {
