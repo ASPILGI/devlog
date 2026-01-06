@@ -8,6 +8,8 @@ JWT 인증/인가, 권한 처리, 예외 응답 통일 등 **실무에서 바로
 단순 CRUD 구현이 아니라 실무에서 사용하는 인증·권한·예외 처리 구조를 기준으로  
 백엔드 아키텍처를 설계하고 구현하는 것입니다.
 
+--- 
+
 ## 기술 스택
 
 - Java 17
@@ -23,14 +25,13 @@ JWT 인증/인가, 권한 처리, 예외 응답 통일 등 **실무에서 바로
 ## 아키텍처 개요
 
 Controller → Service (비즈니스 로직 / 권한 체크 / 트랜잭션) → Repository
+> Controller는 요청/응답 책임만 가지며,  
+> **비즈니스 판단과 트랜잭션은 Service 계층에서 처리**하도록 분리했습니다.
 
 - 인증/인가: JWT + Spring Security
 - 비즈니스 예외: BusinessException + ErrorCode
 - 응답 포맷: ApiResponse<T>
 - 전역 예외 처리: GlobalExceptionHandler
-
-> Controller는 요청/응답 책임만 가지며,  
-> **비즈니스 판단과 트랜잭션은 Service 계층에서 처리**하도록 분리했습니다.
 
 ---
 
@@ -106,8 +107,7 @@ Controller → Service (비즈니스 로직 / 권한 체크 / 트랜잭션) → 
     - `AuthenticationEntryPoint`
     - `AccessDeniedHandler`
 
-> **Security 필터 단계 예외와 서비스 계층 예외를 분리**하여  
-> 예외 흐름을 명확히 했습니다.
+> **Security 필터 단계 예외와 서비스 계층 예외를 분리**하여 예외 흐름을 명확히 했습니다.
 
 ---
 
