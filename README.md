@@ -13,7 +13,7 @@ JWT 인증/인가, 권한 처리, 예외 응답 통일 등 **실무에서 바로
 ## 기술 스택
 
 - Java 17
-- Spring Boot
+- Spring Boot 3.x
 - Spring Security
 - JPA (Hibernate)
 - MariaDB
@@ -24,9 +24,8 @@ JWT 인증/인가, 권한 처리, 예외 응답 통일 등 **실무에서 바로
 
 ## 아키텍처 개요
 
-Controller → Service (비즈니스 로직 / 권한 체크 / 트랜잭션) → Repository
-> Controller는 요청/응답 책임만 가지며,  
-> **비즈니스 판단과 트랜잭션은 Service 계층에서 처리**하도록 분리했습니다.
+Controller → Service → Repository  
+(Service 계층에서 비즈니스 로직, 권한 체크, 트랜잭션을 담당)
 
 - 인증/인가: JWT + Spring Security
 - 비즈니스 예외: BusinessException + ErrorCode
