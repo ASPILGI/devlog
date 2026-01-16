@@ -13,7 +13,7 @@ export default function WritePage() {
     setErrMsg('')
 
     try {
-      await api.post('/api/v1/posts', { title, content })
+      await api.post('/v1/posts', { title, content })
       nav('/posts')
     } catch (e2) {
       setErrMsg(e2?.response?.data?.error?.message || '작성 실패')

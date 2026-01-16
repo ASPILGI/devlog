@@ -18,7 +18,7 @@ export default function PostDetailPage() {
   const load = async () => {
     setErrMsg('')
     try {
-      const res = await api.get(`/api/v1/posts/${id}`)
+      const res = await api.get(`/v1/posts/${id}`)
       const data = res.data?.data || null
       setPost(data)
 
@@ -40,7 +40,7 @@ export default function PostDetailPage() {
   const onUpdate = async () => {
     setErrMsg('')
     try {
-      await api.put(`/api/v1/posts/${id}`, {
+      await api.put(`/v1/posts/${id}`, {
         title: editTitle,
         content: editContent,
       })
@@ -57,7 +57,7 @@ export default function PostDetailPage() {
 
     setErrMsg('')
     try {
-      await api.delete(`/api/v1/posts/${id}`)
+      await api.delete(`/v1/posts/${id}`)
       nav('/posts')
     } catch (e) {
       setErrMsg(e?.response?.data?.error?.message || '삭제 실패')

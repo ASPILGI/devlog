@@ -17,7 +17,7 @@ export default function PostsPage() {
   useEffect(() => {
     ;(async () => {
       try {
-        const res = await api.get('/api/v1/posts?page=0&size=10')
+        const res = await api.get('/v1/posts?page=0&size=10')
         setPosts(res.data?.data?.content || [])
         setErrMsg('')
       } catch (e) {
@@ -28,7 +28,7 @@ export default function PostsPage() {
 
   const reload = async () => {
     try {
-      const res = await api.get('/api/v1/posts?page=0&size=10')
+      const res = await api.get('/v1/posts?page=0&size=10')
       setPosts(res.data?.data?.content || [])
       setErrMsg('')
       setRefreshedAt(new Date().toLocaleTimeString())
