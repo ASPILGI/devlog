@@ -45,3 +45,6 @@ application-*.properties
 ### Env files ###
 .env
 .env.*
+
+# IntelliJ HTTP Client env (local only)
+src/test/http/http-client.env.json
