@@ -1,4 +1,4 @@
-# Devlog – JWT 기반 인증/권한 블로그 백엔드 API
+   # Devlog – JWT 기반 인증/권한 블로그 백엔드 API
 
 > Java / Spring Boot 기반으로
 **JWT 인증·인가, 권한 분기, 예외 처리, 그리고 Docker 기반 CI/CD 배포까지 실무 기준으로 설계·구현한 백엔드 중심 개인 프로젝트**
@@ -21,15 +21,6 @@
 
 - EC2 + Nginx + HTTPS 적용
 - 실제 배포 환경에서 인증 흐름 확인 가능
-
----
-
-## 프로젝트 핵심 설계 포인트
-
-👉 **https://aspilgi.com**
-
-- AWS EC2 + Nginx + HTTPS 적용
-- 실제 운영 환경에서 JWT 인증 흐름 및 권한 제어 확인 가능
 
 ---
 
