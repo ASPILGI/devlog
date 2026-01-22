@@ -38,7 +38,12 @@ public class SecurityConfig {
                         .accessDeniedHandler(new JwtAccessDeniedHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/users/signup", "/api/v1/users/login", "/api/v1/users/reissue").permitAll()
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/api/v1/users/signup",
+                                "/api/v1/users/login",
+                                "/api/v1/users/reissue"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
