@@ -45,7 +45,9 @@ jobs:
     steps:
       - name: Deploy on EC2 with Docker Compose
         run: |
+          set -e
           cd /opt/devlog
           docker compose pull
-          docker compose up -d --remove-orphans
+          docker compose up -d --force-recreate --remove-orphans
+          docker image prune -f
           docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
