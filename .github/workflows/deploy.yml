@@ -35,8 +35,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/aspilgi/devlog:latest
+            ghcr.io/aspilgi/devlog:${{ github.sha }}
 
   deploy:
     needs: build-and-push
