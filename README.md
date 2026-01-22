@@ -10,7 +10,14 @@
 
 👉 UI 구현이 아닌 **백엔드 인증·운영 구조 검증**에 초점을 둔 프로젝트입니다.
 
-# https://aspilgi.com
+---
+
+## 🌐 Demo (운영 중)
+
+👉 **https://aspilgi.com**
+
+- EC2 + Nginx + HTTPS 적용
+- 실제 배포 환경에서 인증 흐름 확인 가능
 
 ---
 
