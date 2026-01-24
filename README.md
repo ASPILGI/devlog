@@ -32,7 +32,7 @@
 - Spring Boot 3.x
 - Spring Security
 - JPA (Hibernate)
-- MariaDB
+- MariaDB, Flyway
 - JWT (Access / Refresh Token)
 
 ### Infra / DevOps
@@ -228,6 +228,17 @@ Production 반영
 curl -I http://127.0.0.1:8080/actuator/health
 # HTTP/1.1 200 OK
 ```
+
+--- 
+
+## DB Migration (Flyway)
+
+운영 환경에서 `ddl-auto=create/update`를 사용하지 않고,  
+**Flyway 기반 마이그레이션으로 DB 스키마를 관리**합니다.
+
+- `spring.jpa.hibernate.ddl-auto=validate` 고정
+- 스키마 변경은 Flyway 마이그레이션 파일로만 수행
+- Docker Compose 운영 환경에서도 앱 기동 시 자동 migrate
 
 ---
 
