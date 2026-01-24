@@ -3,6 +3,8 @@ name: Docker CI/CD (No SSH)
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "README.md"
 
 jobs:
   build-and-push:
