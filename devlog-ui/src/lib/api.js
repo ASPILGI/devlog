@@ -5,10 +5,13 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// 요청마다 accessToken 자동 첨부
+// ✅ 요청마다 accessToken 자동 첨부 (headers 안전 처리)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
@@ -21,20 +24,30 @@ function flushQueue(token) {
   waitQueue = [];
 }
 
+// ===== response interceptor =====
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
-    const status = err && err.response ? err.response.status : null;
-    const original = err ? err.config : null;
+    const status = err?.response?.status;
+    const original = err?.config;
+    if (!original) return Promise.reject(err);
 
-    // 401 아니면 그대로
-    if (status !== 401 || !original) {
+    const url = original.url || "";
+    const method = (original.method || "").toLowerCase();
+
+    // ✅ 토큰이 "없는 상태"에서만 posts 조회를 public 취급
+    // (로그인 상태인데 401이 나오면 refresh로 복구해야 함)
+    const hasToken = !!localStorage.getItem("accessToken");
+    const isPublicGet =
+      !hasToken &&
+      method === "get" &&
+      (url.startsWith("/v1/posts") || url.startsWith("/v1/posts/"));
+
+    if (status !== 401) {
       return Promise.reject(err);
     }
 
-    const url = original.url || "";
-
-    // 로그인/재발급 요청 자체가 401이면 => 진짜 로그아웃
+    // 로그인 / 재발급 실패는 그대로 로그인 이동
     if (url.includes("/v1/users/login") || url.includes("/v1/users/reissue")) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
@@ -42,13 +55,17 @@ api.interceptors.response.use(
       return Promise.reject(err);
     }
 
-    // 무한루프 방지
+    // ✅ 비로그인에서 posts 조회 401이면 여기서 끝 (리다이렉트/리프레시 X)
+    if (isPublicGet) {
+      return Promise.reject(err);
+    }
+
+    // ===== refresh 로직 =====
     if (original._retry) {
       return Promise.reject(err);
     }
     original._retry = true;
 
-    // 이미 refresh 중이면 대기열에 태움
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         waitQueue.push((token) => {
@@ -66,10 +83,8 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("NO_REFRESH_TOKEN");
 
-      // body로 refreshToken 받음
       const res = await api.post("/v1/users/reissue", { refreshToken });
-      const newAccess = res && res.data && res.data.data ? res.data.data.accessToken : null;
-
+      const newAccess = res?.data?.data?.accessToken;
       if (!newAccess) throw new Error("NO_ACCESS_TOKEN");
 
       localStorage.setItem("accessToken", newAccess);
