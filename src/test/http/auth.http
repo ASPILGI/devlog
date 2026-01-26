@@ -9,6 +9,18 @@ Content-Type: application/json
   "email": "devlogA@devlog.com"
 }
 
+### Signup demo
+POST http://localhost:8080/api/v1/users/signup
+Content-Type: application/json
+
+{
+  "loginId": "demo",
+  "password": "demo1234!",
+  "nickname": "데모유저",
+  "email": "demo1@devlog.com"
+}
+
+
 ### 0-1) signup (B)
 POST {{host}}/api/v1/users/signup
 Content-Type: application/json

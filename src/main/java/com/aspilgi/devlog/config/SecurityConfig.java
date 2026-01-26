@@ -7,7 +7,6 @@ import com.aspilgi.devlog.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 import java.util.List;
 
@@ -44,6 +44,10 @@ public class SecurityConfig {
                                 "/api/v1/users/login",
                                 "/api/v1/users/reissue"
                         ).permitAll()
+                        // 프리플라이트 요청 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // 게시글 "조회"는 공개 (목록+상세)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

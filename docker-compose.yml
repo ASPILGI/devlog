@@ -1,0 +1,42 @@
+services:
+  devlog-db:
+    image: mariadb:10.11
+    container_name: devlog-db
+    environment:
+      MARIADB_DATABASE: devlog
+      MARIADB_ROOT_PASSWORD: rootpass
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306"
+    volumes:
+      - devlog_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  devlog-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devlog-api
+    depends_on:
+      devlog-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+
+      DB_HOST: devlog-db
+      DB_PORT: 3306
+      DB_NAME: devlog
+      DB_USERNAME: root
+      DB_PASSWORD: rootpass
+
+      JWT_SECRET: "devlog-change-this-to-a-long-secret-key-at-least-32-bytes"
+      TZ: Asia/Seoul
+    ports:
+      - "8080:8080"
+
+volumes:
+  devlog_db_data:
