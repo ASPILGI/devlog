@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
+import './PostsPage.css'
 
 export default function PostsPage() {
   const nav = useNavigate()
@@ -38,35 +39,46 @@ export default function PostsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: '40px auto', fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Posts</h2>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+    <div className="postsPage">
+      <div className="postsHeader">
+        <div>
+          <h1 className="postsTitle">Posts</h1>
+          <p className="postsDesc">Devlog에 기록된 백엔드 설계 및 운영 관련 글 목록입니다.</p>
+        </div>
+
+        <div className="postsTools">
           <Link to="/write">글쓰기</Link>
           <button onClick={reload}>새로고침</button>
           <button onClick={logout}>로그아웃</button>
         </div>
       </div>
 
-      {refreshedAt && (
-        <p style={{ fontSize: 12, opacity: 0.6, marginTop: 8 }}>마지막 갱신: {refreshedAt}</p>
-      )}
-
+      {refreshedAt && <p className="muted">마지막 갱신: {refreshedAt}</p>}
       {errMsg && <p style={{ marginTop: 12 }}>{errMsg}</p>}
 
-      <ul style={{ lineHeight: 1.9 }}>
+      <ul className="postsList">
         {posts.map((p) => (
-          <li key={p.id}>
-            <Link to={`/posts/${p.id}`} style={{ textDecoration: 'none' }}>
-              <b>{p.title}</b>
-            </Link>{' '}
-            <span style={{ opacity: 0.7 }}>#{p.id}</span>{' '}
-            <span style={{ opacity: 0.7 }}>userId={p.userId}</span>
+          <li key={p.id} className="postItem">
+            <Link to={`/posts/${p.id}`} className="postLink">
+              {p.title}
+            </Link>
+
+            {/* ✅ 디버그 정보(#id, userId) 제거하고 사람이 읽는 메타로 */}
+            <div className="postMeta">by aspilgi · {formatDate(p.createdAt)}</div>
           </li>
         ))}
       </ul>
 
-      {posts.length === 0 && !errMsg && <p>게시글이 없습니다.</p>}
+      {posts.length === 0 && !errMsg && <p className="empty">게시글이 없습니다.</p>}
     </div>
   )
+}
+
+function formatDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
+    d.getDate(),
+  ).padStart(2, '0')}`
 }

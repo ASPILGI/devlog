@@ -5,7 +5,7 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ✅ 요청마다 accessToken 자동 첨부 (headers 안전 처리)
+// ✅ 요청마다 accessToken 자동 첨부
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   if (token) {
@@ -15,9 +15,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// ===== 공개 페이지에서는 401이어도 로그인 강제 이동 금지 =====
+function shouldRedirectToLogin() {
+  const path = window.location.pathname;
+
+  // 공개로 둘 페이지들
+  const isPublic =
+    path === "/" ||
+    path.startsWith("/posts") ||
+    path.startsWith("/login");
+
+  return !isPublic;
+}
+
+function redirectToLoginWithReturn() {
+  const redirect = encodeURIComponent(
+    window.location.pathname + window.location.search
+  );
+  window.location.href = `/login?redirect=${redirect}`;
+}
+
 // ===== 401 자동 재발급(Refresh) 처리 =====
 let isRefreshing = false;
-let waitQueue = []; // (token) => void 콜백 배열
+let waitQueue = []; // (token) => void
 
 function flushQueue(token) {
   waitQueue.forEach((cb) => cb(token));
@@ -33,35 +53,31 @@ api.interceptors.response.use(
     if (!original) return Promise.reject(err);
 
     const url = original.url || "";
-    const method = (original.method || "").toLowerCase();
-
-    // ✅ 토큰이 "없는 상태"에서만 posts 조회를 public 취급
-    // (로그인 상태인데 401이 나오면 refresh로 복구해야 함)
-    const hasToken = !!localStorage.getItem("accessToken");
-    const isPublicGet =
-      !hasToken &&
-      method === "get" &&
-      (url.startsWith("/v1/posts") || url.startsWith("/v1/posts/"));
 
     if (status !== 401) {
       return Promise.reject(err);
     }
 
-    // 로그인 / 재발급 실패는 그대로 로그인 이동
+    // ✅ 로그인/재발급 자체가 401이면: 토큰 정리 + (보호페이지일 때만) 로그인 이동
     if (url.includes("/v1/users/login") || url.includes("/v1/users/reissue")) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      window.location.href = "/login";
-      return Promise.reject(err);
-    }
 
-    // ✅ 비로그인에서 posts 조회 401이면 여기서 끝 (리다이렉트/리프레시 X)
-    if (isPublicGet) {
+      if (shouldRedirectToLogin()) {
+        redirectToLoginWithReturn();
+      }
       return Promise.reject(err);
     }
 
     // ===== refresh 로직 =====
     if (original._retry) {
+      // 이미 재시도했는데도 401이면: 토큰 정리 + (보호페이지일 때만) 로그인 이동
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      if (shouldRedirectToLogin()) {
+        redirectToLoginWithReturn();
+      }
       return Promise.reject(err);
     }
     original._retry = true;
@@ -83,6 +99,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("NO_REFRESH_TOKEN");
 
+      // ⚠️ reissue는 refreshToken만 보내는 걸로 가정
       const res = await api.post("/v1/users/reissue", { refreshToken });
       const newAccess = res?.data?.data?.accessToken;
       if (!newAccess) throw new Error("NO_ACCESS_TOKEN");
@@ -97,7 +114,11 @@ api.interceptors.response.use(
       flushQueue(null);
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      window.location.href = "/login";
+
+      // ✅ 공개 페이지면 홈 유지, 보호 페이지면 로그인 이동
+      if (shouldRedirectToLogin()) {
+        redirectToLoginWithReturn();
+      }
       return Promise.reject(err);
     } finally {
       isRefreshing = false;

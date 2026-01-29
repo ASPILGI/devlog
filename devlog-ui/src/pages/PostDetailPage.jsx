@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import { getMyUserId } from '../lib/auth'
+import './PostDetailPage.css'
 
 export default function PostDetailPage() {
   const { id } = useParams()
@@ -65,10 +66,10 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: '40px auto', fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Post Detail</h2>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+    <div className="postDetail">
+      {/* 상단: 목록/새로고침 */}
+      <div className="postTop">
+        <div className="postTopLeft">
           <Link to="/posts">목록</Link>
           <button onClick={load}>새로고침</button>
         </div>
@@ -77,19 +78,18 @@ export default function PostDetailPage() {
       {errMsg && <p style={{ marginTop: 12 }}>{errMsg}</p>}
 
       {post && (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+        <div>
+          {/* 제목/메타 + 액션 버튼 */}
+          <div className="postHeader">
             <div>
-              <h3 style={{ marginBottom: 6 }}>{post.title}</h3>
-              <div style={{ opacity: 0.7, fontSize: 12, marginBottom: 12 }}>
-                <span>id: {post.id}</span>{' '}
-                <span style={{ marginLeft: 10 }}>userId: {post.userId}</span>{' '}
-                <span style={{ marginLeft: 10 }}>createdAt: {post.createdAt}</span>
-              </div>
+              <h1 className="postTitle">{post.title}</h1>
+
+              {/* ✅ 디버그 정보 제거하고 “사람이 읽는 메타”로 교체 */}
+              <div className="postMeta">by aspilgi · {formatDate(post.createdAt)}</div>
             </div>
 
             {isMine && (
-              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <div className="postActions">
                 {!isEditing ? (
                   <>
                     <button onClick={() => setIsEditing(true)}>수정</button>
@@ -113,21 +113,29 @@ export default function PostDetailPage() {
             )}
           </div>
 
+          {/* 본문/편집 */}
           {!isEditing ? (
-            <pre style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{post.content}</pre>
+            <div className="postContent">{post.content}</div>
           ) : (
-            <div style={{ display: 'grid', gap: 10 }}>
-              <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+            <div className="editBox">
+              <input
+                className="editInput"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                placeholder="제목"
+              />
               <textarea
-                rows={10}
+                className="editTextarea"
+                rows={12}
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
+                placeholder="내용"
               />
             </div>
           )}
 
           {!isMine && (
-            <p style={{ opacity: 0.6, fontSize: 12, marginTop: 16 }}>
+            <p className="helperText">
               내 글이 아니면 수정/삭제 버튼이 보이지 않습니다. (권한 정책)
             </p>
           )}
@@ -135,4 +143,13 @@ export default function PostDetailPage() {
       )}
     </div>
   )
+}
+
+function formatDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
+    d.getDate(),
+  ).padStart(2, '0')}`
 }

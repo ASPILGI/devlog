@@ -1,0 +1,74 @@
+.postDetail {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 16px;
+}
+
+.postTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.postTopLeft {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.postHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.postTitle {
+  margin: 0 0 6px 0;
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.postMeta {
+  color: #777;
+  font-size: 13px;
+}
+
+.postActions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.postContent {
+  line-height: 1.85;
+  font-size: 16px;
+  white-space: pre-wrap;
+}
+
+.editBox {
+  display: grid;
+  gap: 10px;
+}
+
+.editInput,
+.editTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.editTextarea {
+  resize: vertical;
+}
+
+.helperText {
+  opacity: 0.65;
+  font-size: 12px;
+  margin-top: 16px;
+}

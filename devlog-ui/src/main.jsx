@@ -2,38 +2,41 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
+import AppLayout from './layout/AppLayout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import PostsPage from './pages/PostsPage'
 import WritePage from './pages/WritePage'
-import RequireAuth from './components/RequireAuth'
 import PostDetailPage from './pages/PostDetailPage'
+import AboutPage from './pages/AboutPage'
+import RequireAuth from './components/RequireAuth'
+import SignupPage from './pages/SignupPage'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* 공개 랜딩 */}
-        <Route path="/" element={<HomePage />} />
+        {/* 공통 레이아웃 */}
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/posts" element={<PostsPage />} />
+          <Route path="/posts/:id" element={<PostDetailPage />} />
+          <Route path="/about" element={<AboutPage />} />
 
-        {/* 로그인 */}
+          <Route
+            path="/write"
+            element={
+              <RequireAuth>
+                <WritePage />
+              </RequireAuth>
+            }
+          />
+        </Route>
+
+        {/* 레이아웃 없는 페이지 */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
-        {/* 게시글 읽기는 공개로 풀기 (첫인상 개선 핵심) */}
-        <Route path="/posts" element={<PostsPage />} />
-        <Route path="/posts/:id" element={<PostDetailPage />} />
-
-        {/* 글쓰기만 보호 */}
-        <Route
-          path="/write"
-          element={
-            <RequireAuth>
-              <WritePage />
-            </RequireAuth>
-          }
-        />
-
-        {/* 기본 리다이렉트는 홈으로 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
